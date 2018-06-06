@@ -1,6 +1,8 @@
 import logging
 import time
 from datetime import datetime, timedelta, time as dttime
+from data import data
+from markdown import markdown
 
 log_date_fmt = '%y-%m-%d %X %Z'
 logging.basicConfig(level=logging.DEBUG,
@@ -17,9 +19,6 @@ formatter = logging.Formatter('%(asctime)s %(name)-12s %(levelname)-8s %(message
 console.setFormatter(formatter)
 # add the handler to the root logger
 logging.getLogger('').addHandler(console)
-
-from data import data
-from markdown import markdown
 
 class nba_bot(object):
     def post_index_thread(self):
