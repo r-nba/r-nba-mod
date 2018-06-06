@@ -1,15 +1,14 @@
-from Data import Data
+from data import data
 
-class NBABot(object):
-    def postIndexThread(self):
+class nba_bot(object):
+    def post_index_thread(self):
         pass
 
-    def updateIndexThread(self):
+    def update_index_thread(self):
         pass
 
-    def testFramework(self):
+    def test_framework(self):
         print('Hello World!')
 
-
     def __init__(self):
-        self.data = Data()
+        self.data = data()
