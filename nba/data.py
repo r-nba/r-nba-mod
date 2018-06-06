@@ -74,11 +74,12 @@ class data(object):
 
                 standings[int(i+1)] = tmp_row
 
-        self.standings = standings
+        return standings
 
     def __init__(self):        
         self.json_teams = None
         self.json_standings = None
         self.refresh_scoreboard(datetime.datetime.strftime(datetime.datetime.today(), '%Y%m%d'))
-        
+
+        self.load_teams()
         self.standings = self.get_standings()
