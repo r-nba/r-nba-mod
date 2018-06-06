@@ -81,5 +81,4 @@ class data(object):
         self.json_standings = None
         self.refresh_scoreboard(datetime.datetime.strftime(datetime.datetime.today(), '%Y%m%d'))
         
-        self.load_teams()
         self.standings = self.get_standings()
