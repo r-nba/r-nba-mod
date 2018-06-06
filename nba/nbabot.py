@@ -1,6 +1,23 @@
 import logging
 import time
 from datetime import datetime, timedelta, time as dttime
+
+log_date_fmt = '%y-%m-%d %X %Z'
+logging.basicConfig(level=logging.DEBUG,
+                    format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
+                    datefmt=log_date_fmt,
+                    filename='index_bot.log',
+                    filemode='a')
+# define a Handler which writes INFO messages or higher to the sys.stderr
+console = logging.StreamHandler()
+console.setLevel(logging.DEBUG)
+# set a format for console use
+formatter = logging.Formatter('%(asctime)s %(name)-12s %(levelname)-8s %(message)s', datefmt=log_date_fmt)
+# tell the handler to use this format
+console.setFormatter(formatter)
+# add the handler to the root logger
+logging.getLogger('').addHandler(console)
+
 from data import data
 from markdown import markdown
 
