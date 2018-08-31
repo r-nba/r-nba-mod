@@ -75,6 +75,46 @@ class data(object):
                 standings[int(i+1)] = tmp_row
 
         return standings
+    
+    def get_bracket(self):
+        bracket = {}
+        with urllib.request.urlopen('https://data.nba.com/data/10s/prod/v1/2017/playoffsBracket.json') as url:
+            j = json.loads(url.read().decode())
+
+            for i in range(0,15):
+                series = j['series'][i]
+                series_name = str(i+1)
+                series_winner = series['summaryStatusText'][:3]
+                
+                top_seed = series['topRow']['teamId']
+                bottom_seed = series['bottomRow']['teamId']
+                
+                if series_winner == self.team_dict[top_seed]['short_name']:
+                    series_record = series['summaryStatusText'][-3:].replace("-", " - ")
+                else:
+                    series_record = series['summaryStatusText'][-3:].replace("-", " - ")[::-1]
+
+                tmp_brkt = {
+                    'series': series['confName'] + " R" + series['roundNum'],
+                    'top_name': self.team_dict[top_seed]['short_name'],
+                    'top_seed': series['topRow']['seedNum'],
+                    'bottom_name': self.team_dict[bottom_seed]['short_name'],
+                    'bottom_seed': series['bottomRow']['seedNum'],
+                    'summary': series_record
+                }
+
+                bracket[series_name] = tmp_brkt
+
+                if j['series'][14]:
+                    if [series['topRow']['isSeriesWinner'],series['bottomRow']['isSeriesWinner']] == 'true':
+                        bracket['16'] = {
+                            'champ': series_winner
+                        }
+                    else:
+                        bracket['16'] = {
+                            'champ': "NA"
+                        }
+        return bracket
 
     def __init__(self):        
         self.json_teams = None
