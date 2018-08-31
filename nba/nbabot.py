@@ -30,11 +30,17 @@ class nba_bot(object):
     def test_framework(self):
         print('Hello World!')
 
-    def create_legacy_standings(self):
+    def update_legacy_standings(self):
         legacy_markdown = markdown.get_legacy_standings(self.data.standings)
 
-    def create_widget_standings(self):
+    def update_widget_standings(self):
         widget_markdown = markdown.get_widget_standings(self.data.standings)
+
+    def update_legacy_bracket(self):
+        legacy_markdown = markdown.get_legacy_bracket(self.data.bracket)
+
+    def update_widget_bracket(self):
+        widget_markdown = markdown.get_widget_bracket(self.data.bracket)
 
     def __init__(self):
         self.data = data()
@@ -45,7 +51,7 @@ def run_nba():
     consecutive_error_count = 0
     while run_updates:
         try:
-            bot.create_legacy_standings()
+            bot.update_widget_bracket()
             update_freq = 60 * 10
             consecutive_error_count = 0
         except KeyboardInterrupt as e:
