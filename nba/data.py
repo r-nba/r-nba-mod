@@ -6,7 +6,7 @@ import calendar
 
 def main():
     d = data()
-    d.schedule()
+    d.top_bar()
 
 class data:
     def team_subreddits(self):
@@ -48,9 +48,35 @@ class data:
         return ""
 
     def top_bar(self): # Check Bre's work on r/nbadev if you don't know what this is
+        games = []
+        parameter = datetime.datetime.today().strftime('%Y%m%d')
+        #parameter = str(20180314) # This line is for testing purposes. Date is set to March 14th, 2018.
+        parameter = str(20180928) # This line is for testing purposes. Date is set to March 14th, 2018.
         
-        top_bar_cards = []
-        return top_bar_cards
+        with urlopen('http://data.nba.com/prod/v2/' + parameter + '/scoreboard.json') as url:
+            j = json.loads(url.read().decode())
+            for game in j["games"]:
+                if game["vTeam"]["teamId"] not in self.team_id_dict or game["hTeam"]["teamId"] not in self.team_id_dict: # Games against non-nba teams are disregarded
+                    continue
+                gameDetails = {}
+                if game["statusNum"] == 1: # Game hasn't started
+                    gameDetails["time"] = game["startTimeEastern"].replace(" ET", "")
+                elif game["statusNum"] == 2: # Game in progress
+                    gameDetails["time"] = game["clock"] + " " + game["period"]["current"] + "Q"
+                elif game["statusNum"] == 3: # Game completed
+                    gameDetails["time"] = "FINAL"
+                gameDetails["home"] = game["hTeam"]["triCode"]
+                gameDetails["away"] = game["vTeam"]["triCode"]
+                if not game["statusNum"] == 1:
+                    gameDetails["home_score"] = game["hTeam"]["score"]
+                    gameDetails["away_score"] = game["vTeam"]["score"]
+                else:
+                    gameDetails["home_score"] = ""
+                    gameDetails["away_score"] = ""
+                #print(gameDetails)
+                games.append(gameDetails)
+        print(games)
+        return games
 
     def standings(self):
         standings = {}
