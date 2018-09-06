@@ -32,8 +32,8 @@ class markdown:
             home_score = ""
             visitor_score = ""
             if game['home_score']:
-                home_score = game['home_score']
-                visitor_score = game['visitor_score']
+                home_score = "["+game['home_score']+"](#HS)"
+                visitor_score = "["+game['visitor_score']+"](#HS)"
                 if int(home_score) > int(visitor_score):
                     game['home'] = "**" + game['home'] + "**"
                 else:
