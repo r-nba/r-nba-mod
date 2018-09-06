@@ -1,7 +1,3 @@
-import urllib
-import requests
-import json
-import datetime
 class markdown:
 
     # Input: dictionary containing team subreddits
@@ -21,8 +17,7 @@ class markdown:
         line = ''
         for k, day in dict_schedule.items():
             line += """[{0}| ET](/date)\n""".format(k)
-            line += """|||
-:--|:-:\n"""
+            line += """|||\n:--|:-:\n"""
             for game in day:
                 # Unpacks all keys in game into format tags: eg. game['time'] unpacked to {time}
                 line += """[{time}](/tgt)|[{home}]({home_subreddit}) at [{away}]({away_subreddit})\n""" \
@@ -32,11 +27,7 @@ class markdown:
     # Input dictionary containing live game scores
     # Output: Markdown for game score bar
     def top_bar(self, top_bar_elements):
-        text = """> 
-* [](http://reddit.com)
-* [](http://nba-mod-bot.herokuapp.com/)
-* [](#A) [Free Agency Tracker]\n"""
-
+        text = """> \n* [](http://reddit.com)\n* [](http://nba-mod-bot.herokuapp.com/)\n* [](#A) [Free Agency Tracker]\n"""
         for game in top_bar_elements:
             home_score = ""
             visitor_score = ""
@@ -60,7 +51,7 @@ class markdown:
         return ""
 
     # Helper functions
-    def get_legacy_standings(dict_standings):
+    def get_legacy_standings(self, dict_standings):
         legacy_standings = 'WEST|||EAST|||\n:---:|:---:|:---:|:---:|:---:|:---:\n**TEAM**|*W/L*|*GB*|**TEAM**|*W/L*|*GB*\n'
 
         for i in range(0, 15):
@@ -77,7 +68,7 @@ class markdown:
 
         return legacy_standings
 
-    def get_widget_standings(dict_standings):
+    def get_widget_standings(self, dict_standings):
         widget_standings = '- \n - \n     - west\n     - W - L\n     - GB\n     - GB\n     - W - L\n     - east\n\n'
 
         for i in range(0, 15):
@@ -89,7 +80,7 @@ class markdown:
 
         return widget_standings
 
-    def get_widget_bracket(dict_bracket):
+    def get_widget_bracket(self, dict_bracket):
         bracket = dict_bracket
 
         widget_bracket = (
