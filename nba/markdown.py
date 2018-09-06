@@ -2,25 +2,56 @@ import urllib
 import requests
 import json
 import datetime
-
+import datasources
 class markdown:
     def team_subreddits(self, dict_team_subs):
-        return ""
+        team_subs = ''
+        for team in dict_team_subs:
+            team_subs += """* []({0})\n""".format(team['subreddits'])
+        return team_subs
 
     def schedule(self, dict_schedule):
-        return ""
+        line = ''
+        for k,day in dict_schedule.items():
+            line += """[{0}| ET](/date)\n""".format(k)
+            line += """|||
+:--|:-:\n"""
+            for game in day:
+                line += """[{0}](/tgt)|[{1}]({2}) at [{3}]({4})\n"""\
+                    .format(game['time'],game['home'], game['home_subreddit'],game['away'],game['away_subreddit'])
+        return line
+
 
     def top_bar(self, top_bar_elements):
-        return ""
+        text = """> 
+* [](http://reddit.com)
+* [](http://nba-mod-bot.herokuapp.com/)
+* [](#A) [Free Agency Tracker]"""
+
+        for game in top_bar_elements:
+            home_score = ""
+            visitor_score = ""
+            if game['home_score']:
+                home_score = game['home_score']
+                visitor_score = game['visitor_score']
+                if int(home_score) > int(visitor_score):
+                    game['home'] = "**" + game['home'] + "**"
+                else:
+                    game['visitor']  = "**" + game['visitor'] + "**"
+
+            text += """* [{0}](#GT) [{1}](#GH) [{2}](#GV) {3} {4}"""\
+                .format(game['time'], game['home'], game['visitor'], home_score, visitor_score)
+        return text
+
 
     def standings(self, dict_standings):
+
         return ""
 
     def playoffs(self, dict_playoffs):
         return ""
 
     # Helper functions
-    """
     def get_legacy_standings(dict_standings):
         legacy_standings = 'WEST|||EAST|||\n:---:|:---:|:---:|:---:|:---:|:---:\n**TEAM**|*W/L*|*GB*|**TEAM**|*W/L*|*GB*\n'
 
@@ -80,4 +111,7 @@ class markdown:
                             "- \n - \n     - 1\n     - 8\n - \n     - 4\n     - 5\n - \n     - 3\n     - 6\n - \n     - 2\n     - 7")
 
         return widget_bracket
-    """
+
+D = data()
+markdown = markdown()
+markdown.standings(D.standings())
