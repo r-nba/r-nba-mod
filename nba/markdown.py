@@ -36,7 +36,7 @@ class markdown:
                 visitor_score = "["+game['visitor_score']+"](#HS)"
                 if int(home_score) > int(visitor_score):
                     game['home'] = "**" + game['home'] + "**"
-                else:
+                elif int(home_score) < int(visitor_score):
                     game['visitor']  = "**" + game['visitor'] + "**"
 
             text += """* [{0}](#GT) [{1}](#GH) [{2}](#GV) {3} {4}"""\
@@ -45,8 +45,10 @@ class markdown:
 
 
     def standings(self, dict_standings):
+        text = """WEST|W - L|GB||GB|W - L|EAST
+:-:|:-:|:-:|:-:|:-:|:-:|:-:"""
 
-        return ""
+
 
     def playoffs(self, dict_playoffs):
         return ""
@@ -111,7 +113,3 @@ class markdown:
                             "- \n - \n     - 1\n     - 8\n - \n     - 4\n     - 5\n - \n     - 3\n     - 6\n - \n     - 2\n     - 7")
 
         return widget_bracket
-
-D = data()
-markdown = markdown()
-markdown.standings(D.standings())
