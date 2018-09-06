@@ -20,7 +20,7 @@ class markdown:
             line += """|||\n:--|:-:\n"""
             for game in day:
                 # Unpacks all keys in game into format tags: eg. game['time'] unpacked to {time}
-                line += """[{time}](/tgt)|[{home}]({home_subreddit}) at [{away}](/r/{away_subreddit})\n""" \
+                line += """[{time}](/tgt)|[{home}](/r/{home_subreddit}) at [{away}](/r/{away_subreddit})\n""" \
                     .format(**game)
         return line
 
