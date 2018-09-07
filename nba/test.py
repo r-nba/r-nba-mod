@@ -4,4 +4,4 @@ from pprint import pprint
 D = data()
 M = markdown()
 pprint(D.playoffs())
-
+print(M.playoffs(D.playoffs()))

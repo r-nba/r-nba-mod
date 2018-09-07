@@ -52,10 +52,58 @@ class markdown:
 
 
     def playoffs(self, dict_playoffs):
-        text = """####[](//)\n\n||||||||\n:-:|:-:|:-:|:-:|:-:|:-:|:-:\n**1***8*||**4***5*||**3***6*||**2***7*"""
-        for k,v in dict_playoffs.items():
-            text += """[](/r/{top_sub})[](/r/{bottom_sub})||[](/r/thunder)[](/r/utahjazz)||[](/r/ripcity)[](/r/nolapelicans)||[](/r/warriors)[](/r/nbaspurs)
-**HOU** 4 - 1 *MIN*||**OKC** 2 - 4 *UTA*||**POR** 0 - 4 *NOP*||**GSW** 4 - 1 *SAS*"""
+        text = """####[](//)\n\n||||||||\n:-:|:-:|:-:|:-:|:-:|:-:|:-:\n**1***8*||**4***5*||**3***6*||**2***7*\n"""
+
+        # West Round 1
+        for i in range(1,5):
+            text += """[](/r/{top_sub})[](/r/{bottom_sub})||""".format(**dict_playoffs[str(i)])
+        text = text[:-2] + "\n"
+        for i in range(1,5):
+            text += """**{top_name}** {summary} *{bottom_name}*||""".format(**dict_playoffs[(str(i))])
+        text = text[:-2] + "\n\n"
+
+        # West Round 2
+        text += """||||\n:-:|:-:|:-:\n"""
+        for i in range(9,11):
+            text += """[](/r/{top_sub})[](/r/{bottom_sub})||""".format(**dict_playoffs[(str(i))])
+        text = text[:-2] + "\n"
+        for i in range(9,11):
+            text += """**{top_name}** {summary} *{bottom_name}*||""".format(**dict_playoffs[(str(i))])
+        text = text[:-2] + "\n\n"
+
+        #WCF
+        text += """||||||||||\n:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:"""
+        text += """|||[](/r/{top_sub})||**{top_name}** {summary} *{bottom_name}*||[](/r/{bottom_sub})||\n|\n""".format(**dict_playoffs['13'])
+
+        #Finals
+        text += """|||||[{top_name}](/r/{top_sub})|||\n""".format(**dict_playoffs['15'])
+        text += """[{champ_name}](/r/{champ_sub})|[<-- CHAMP](/CHAMP)""".format(**dict_playoffs['16'])
+        text += """|||**{top_name}** {summary} *{bottom_name}*||||\n""".format(**dict_playoffs['15'])
+        text += """|||||[{bottom_name}](/r/{bottom_sub})||||\n|\n""".format(**dict_playoffs['15'])
+
+        #ECF
+        text += """|||[](/r/{top_sub})||**{top_name}** {summary} *{bottom_name}*||[](/r/{bottom_sub})||""".format(**dict_playoffs['14'])
+
+        #East Round 2
+        text += """\n\n||||\n:-:|:-:|:-:\n"""
+        for i in range(11,13):
+            text += """**{top_name}** {summary} *{bottom_name}*||""".format(**dict_playoffs[(str(i))])
+        text = text[:-2] + "\n"
+        for i in range(11,13):
+            text += """[](/r/{top_sub})[](/r/{bottom_sub})||""".format(**dict_playoffs[(str(i))])
+        text = text[:-2] + "\n"
+
+        #East Round 1
+        for i in range(5,9):
+            text += """**{top_name}** {summary} *{bottom_name}*||""".format(**dict_playoffs[(str(i))])
+        text = text[:-2] + "\n\n"
+        for i in range(5,9):
+            text += """[](/r/{top_sub})[](/r/{bottom_sub})||""".format(**dict_playoffs[str(i)])
+        text = text[:-2] + "\n"
+
+
+        text += """**1***8*||**4***5*||**3***6*||**2***7*\n"""
+        return text
 
 
     # Helper functions
