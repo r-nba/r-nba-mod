@@ -6,7 +6,8 @@ import collections
 
 def main():
     d = data()
-    d.top_bar()
+    d.standings()
+    d.playoffs()
 
 class data:
     def team_subreddits(self):
@@ -44,9 +45,6 @@ class data:
 
         return days
 
-    def game_threads(self):
-        return ""
-
     def top_bar(self): # Check Bre's work on r/nbadev if you don't know what this is
         games = []
         parameter = datetime.datetime.today().strftime('%Y%m%d')
@@ -75,9 +73,12 @@ class data:
                     gameDetails["away_score"] = ""
                 #print(gameDetails)
                 games.append(gameDetails)
-        print(games)
+        #print(games)
         return games
 
+    def game_threads(self):
+        return ""
+    
     def standings(self):
         standings = {}
         with urlopen('http://data.nba.com/prod/v1/current/standings_conference.json') as url:
@@ -91,17 +92,20 @@ class data:
                 tmp_row = {
                     'east_name': self.team_id_dict[east_id]['short_name'],
                     'east_nick': self.team_id_dict[east_id]['med_name'],
+                    'east_sub' : self.team_id_dict[east_id]["sub"],
                     'east_record': east['win'] + '-' + east['loss'],
                     'east_gb_conf': '%.1f' % int(east['gamesBehind']),
                     'east_div_rank': east['divRank'],
                     'conf_rank': str(i+1),
                     'west_name': self.team_id_dict[west_id]['short_name'],
                     'west_nick': self.team_id_dict[west_id]['med_name'],
+                    'west_sub' : self.team_id_dict[west_id]["sub"],
                     'west_record': west['win'] + '-' + west['loss'],
                     'west_gb_conf': '%.1f' % int(west['gamesBehind']),
                     'west_div_rank': west['divRank']
                 }
                 standings[int(i+1)] = tmp_row
+        #print(standings)
         return standings
 
     def playoffs(self):
@@ -126,8 +130,10 @@ class data:
                     'series': series['confName'] + " R" + series['roundNum'],
                     'top_name': self.team_id_dict[top_seed]['short_name'],
                     'top_seed': series['topRow']['seedNum'],
+                    'top_sub' : self.team_id_dict[top_seed]["sub"],
                     'bottom_name': self.team_id_dict[bottom_seed]['short_name'],
                     'bottom_seed': series['bottomRow']['seedNum'],
+                    'bottom_sub' : self.team_id_dict[bottom_seed]["sub"],
                     'summary': series_record
                 }
 
@@ -142,6 +148,7 @@ class data:
                         bracket['16'] = {
                             'champ': "NA"
                         }
+        print(bracket)
         return bracket
 
     def __init__(self):        
