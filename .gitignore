@@ -108,3 +108,6 @@ venv.bak/
 
 # config
 nba/config.py
+
+# Idea
+.idea/
