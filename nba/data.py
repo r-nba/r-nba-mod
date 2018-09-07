@@ -1,8 +1,8 @@
 from urllib.request import urlopen
-import requests
 import json
 import datetime
 import calendar
+import collections
 
 def main():
     d = data()
@@ -109,7 +109,7 @@ class data:
         return standings
 
     def playoffs(self):
-        bracket = {}
+        bracket = collections.OrderedDict()
         with urlopen('https://data.nba.com/data/10s/prod/v1/2017/playoffsBracket.json') as url:
             j = json.loads(url.read().decode())
 

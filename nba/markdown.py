@@ -30,25 +30,33 @@ class markdown:
         text = """> \n* [](http://reddit.com)\n* [](http://nba-mod-bot.herokuapp.com/)\n* [](#A) [Free Agency Tracker]\n"""
         for game in top_bar_elements:
             home_score = ""
-            visitor_score = ""
+            away_score = ""
             if game['home_score']:
-                home_score = game['home_score']
-                visitor_score = game['visitor_score']
-                if int(home_score) > int(visitor_score):
+                home_score = "["+game['home_score']+"](#HS)"
+                away_score = "["+game['away']+"](#HS)"
+                if int(home_score) > int(away_score):
                     game['home'] = "**" + game['home'] + "**"
-                else:
-                    game['visitor'] = "**" + game['visitor'] + "**"
+                elif int(home_score) < int(away_score):
+                    game['away']  = "**" + game['away'] + "**"
 
             text += """* [{0}](#GT) [{1}](#GH) [{2}](#GV) {3} {4}""" \
-                .format(game['time'], game['home'], game['visitor'], home_score, visitor_score)
+                .format(game['time'], game['home'], game['away'], home_score, away_score)
         return text
 
     def standings(self, dict_standings):
+        text = """WEST|W - L|GB||GB|W - L|EAST\n:-:|:-:|:-:|:-:|:-:|:-:|:-:\n"""
+        for rank,value in dict_standings.items():
+            text += """[{west_name}](/r/)|{west_record}|{west_gb_conf}|{conf_rank}|{east_gb_conf}|{east_record}|[{east_name}](/r/)\n""".format(**value)
+        return text
 
-        return ""
+
 
     def playoffs(self, dict_playoffs):
-        return ""
+        text = """####[](//)\n\n||||||||\n:-:|:-:|:-:|:-:|:-:|:-:|:-:\n**1***8*||**4***5*||**3***6*||**2***7*"""
+        for k,v in dict_playoffs.items():
+            text += """[](/r/{top_sub})[](/r/{bottom_sub})||[](/r/thunder)[](/r/utahjazz)||[](/r/ripcity)[](/r/nolapelicans)||[](/r/warriors)[](/r/nbaspurs)
+**HOU** 4 - 1 *MIN*||**OKC** 2 - 4 *UTA*||**POR** 0 - 4 *NOP*||**GSW** 4 - 1 *SAS*"""
+
 
     # Helper functions
     def get_legacy_standings(self, dict_standings):

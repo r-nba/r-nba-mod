@@ -1,7 +1,7 @@
 from data import data
 from markdown import markdown
+from pprint import pprint
 D = data()
 M = markdown()
-print(D.schedule())
+pprint(D.playoffs())
 
-print(M.schedule(D.schedule()))
