@@ -140,9 +140,10 @@ class data:
                 bracket[series_name] = tmp_brkt
 
                 if j['series'][14]:
-                    if [series['topRow']['isSeriesWinner'],series['bottomRow']['isSeriesWinner']] == 'true':
+                    if series["topRow"]["isSeriesWinner"] or series["bottomRow"]["isSeriesWinner"]:
                         bracket['16'] = {
-                            'champ': series_winner
+                            'champ_name': series_winner,
+                            'champ_sub' : self.team_abbrev_dict[series_winner]["sub"],
                         }
                     else:
                         bracket['16'] = {
