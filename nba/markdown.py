@@ -27,20 +27,21 @@ class markdown:
     # Input dictionary containing live game scores
     # Output: Markdown for game score bar
     def top_bar(self, top_bar_elements):
-        text = """> \n* [](http://reddit.com)\n* [](http://nba-mod-bot.herokuapp.com/)\n* [](#A) [Free Agency Tracker]\n"""
+        text = """> \n* [](http://reddit.com)\n* [](http://nba-mod-bot.herokuapp.com/)\n* [](#A) [Free Agency Tracker](https://www.reddit.com/r/nba/comments/8u3qed/2018_nba_free_agent_tracker/)\n"""
         for game in top_bar_elements:
             home_score = ""
             away_score = ""
             if game['home_score']:
                 home_score = "["+game['home_score']+"](#HS)"
-                away_score = "["+game['away']+"](#HS)"
-                if int(home_score) > int(away_score):
+                away_score = "["+game['away_score']+"](#HS)"
+                if int(game['home_score']) > int(game['away_score']):
                     game['home'] = "**" + game['home'] + "**"
-                elif int(home_score) < int(away_score):
+                elif int(game['home_score']) < int(game['away_score']):
                     game['away']  = "**" + game['away'] + "**"
 
-            text += """* [{0}](#GT) [{1}](#GH) [{2}](#GV) {3} {4}""" \
+            text += """* [{0}](#GT) [{1}](#GH) [{2}](#GV) {3} {4}\n""" \
                 .format(game['time'], game['home'], game['away'], home_score, away_score)
+        text += '* \n'
         return text
 
     def standings(self, dict_standings):
@@ -94,9 +95,10 @@ class markdown:
         text = text[:-2] + "\n"
 
         #East Round 1
+        text += """\n||||||||\n:-:|:-:|:-:|:-:|:-:|:-:|:-:\n"""
         for i in range(5,9):
             text += """**{top_name}** {summary} *{bottom_name}*||""".format(**dict_playoffs[(str(i))])
-        text = text[:-2] + "\n\n"
+        text = text[:-2] + "\n"
         for i in range(5,9):
             text += """[](/r/{top_sub})[](/r/{bottom_sub})||""".format(**dict_playoffs[str(i)])
         text = text[:-2] + "\n"

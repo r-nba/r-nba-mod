@@ -6,7 +6,7 @@ import collections
 import praw
 import re
 from prawmod import bot
-
+from pprint import pprint
 def main():
     d = data()
     d.standings()
@@ -66,19 +66,18 @@ class data:
             threadType = str(thread.link_flair_css_class)
             threadDate =  datetime.datetime.now().replace(hour = 0, minute = 0, second = 0, microsecond = 0)
 
-            if thread.threadType == threadType and thread.threadDate == threadDate and all(x in thread.threadTitle for x in [hTeamName, vTeamName]):
+            if threadType == threadType and thread.threadDate == threadDate and all(x in thread.threadTitle for x in [hTeamName, vTeamName]):
                 return thread.threadID
 
 
-    def top_bar(self): # Check Bre's work on r/nbadev if you don't know what this is
+    def top_bar(self):
         games = []
         parameter = datetime.datetime.today().strftime('%Y%m%d')
         #parameter = str(20180314) # This line is for testing purposes. Date is set to March 14th, 2018.
-        parameter = str(20180928) # This line is for testing purposes. Date is set to March 14th, 2018.
-
         with urlopen('http://data.nba.com/prod/v2/' + parameter + '/scoreboard.json') as url:
             j = json.loads(url.read().decode())
             for game in j["games"]:
+                pprint(game)
                 if game["vTeam"]["teamId"] not in self.team_id_dict or game["hTeam"]["teamId"] not in self.team_id_dict: # Games against non-nba teams are disregarded
                     continue
                 for team in self.teams:
@@ -86,13 +85,13 @@ class data:
                         hTeamName = team[1]
                     if team[0] == game['vTeam']['teamId']:
                         vTeamName = team[1]
-                gameThreadID = self.getThread(hTeamName,vTeamName)
+                # gameThreadID = self.getThread(hTeamName,vTeamName)
                 gameDetails = {}
-                gameDetails['gamethread'] = gameThreadID
+                # gameDetails['gamethread'] = gameThreadID
                 if game["statusNum"] == 1: # Game hasn't started
                     gameDetails["time"] = game["startTimeEastern"].replace(" ET", "")
                 elif game["statusNum"] == 2: # Game in progress
-                    gameDetails["time"] = game["clock"] + " " + game["period"]["current"] + "Q"
+                    gameDetails["time"] = str(game["clock"]) + " " + str(game["period"]["current"]) + "Q"
                 elif game["statusNum"] == 3: # Game completed
                     gameDetails["time"] = "FINAL"
                 gameDetails["home"] = game["hTeam"]["triCode"]
