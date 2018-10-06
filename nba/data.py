@@ -13,19 +13,7 @@ def main():
     d.playoffs()
 
 class data:
-    teamAbbrs = [
-        'ATL', 'CHA', 'MIA', 'ORL', 'WAS',
-        'BOS', 'BKN', 'NYK', 'PHI', 'TOR',
-        'CHI', 'CLE', 'DET', 'IND', 'MIL',
-        'GSW', 'LAC', 'LAL', 'PHX', 'SAC',
-        'DAL', 'HOU', 'MEM', 'NOP', 'SAS',
-        'DEN', 'MIN', 'OKC', 'POR', 'UTA'
-    ]
-    nicknames = ['Hawks', 'Hornets', 'Heat', 'Magic', 'Wizards', 'Celtics', 'Nets', 'Knicks', '76ers', 'Raptors',
-                 'Bulls', 'Cavaliers', 'Pistons', 'Pacers', 'Bucks', 'Warriors', 'Clippers', 'Lakers', 'Suns', 'Kings',
-                 'Mavericks','Rockets','Grizzlies','Pelicans','Spurs','Nuggets','Timberwolves','Thunder','Trail Blazers',
-                 'Jazz']
-    teams = zip(teamAbbrs,nicknames)
+
     def team_subreddits(self):
         return [{"team_abbrev":abbrev, "subreddit":self.team_abbrev_dict[abbrev]["sub"]} for abbrev in self.team_abbrev_dict]
 
@@ -91,6 +79,7 @@ class data:
                 if game["statusNum"] == 1: # Game hasn't started
                     gameDetails["time"] = game["startTimeEastern"].replace(" ET", "")
                 elif game["statusNum"] == 2: # Game in progress
+                    gameDetails["time"] = str(game["clock"]) + " " + str(game["period"]["current"]) + "Q"
                     gameDetails["time"] = str(game["clock"]) + " " + str(game["period"]["current"]) + "Q"
                 elif game["statusNum"] == 3: # Game completed
                     gameDetails["time"] = "FINAL"
@@ -209,6 +198,9 @@ class data:
                 self.team_id_dict[teamInfo[7]] = tmp_team_id_dict
                 self.team_name_dict[teamInfo[1]] = tmp_team_id_dict
                 self.team_abbrev_dict[teamInfo[2].upper()] = tmp_team_id_dict
+        self.teams = []
+        for team, team_data in data.team_abbrev_dict.items():
+            self.teams.append((team, team_data['med_name']))
 
 if __name__ == "__main__":
     main()

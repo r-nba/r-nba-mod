@@ -23,4 +23,7 @@ from markdown import markdown
 from data import data
 mdown = markdown()
 data = data()
-print(mdown.top_bar(data.top_bar()))
+teams = []
+for team, team_data in data.team_abbrev_dict.items():
+    teams.append((team, team_data['med_name']))
+print(teams)
