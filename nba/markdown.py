@@ -27,7 +27,7 @@ class markdown:
     # Input dictionary containing live game scores
     # Output: Markdown for game score bar
     def top_bar(self, top_bar_elements):
-        text = """> \n* [](http://reddit.com)\n* [](http://nba-mod-bot.herokuapp.com/)\n* [](#A) [Free Agency Tracker](https://www.reddit.com/r/nba/comments/8u3qed/2018_nba_free_agent_tracker/)\n"""
+        text = """> \n* [Reddit](//www.reddit.com)\n* [Player Flair Tool](//www.nbaflairbot.herokuapp.com/)\n* [](#A) [](#A) [Free Agency Tracker](https://www.reddit.com/r/nba/6j2ts)\n"""
         for game in top_bar_elements:
             home_score = ""
             away_score = ""
@@ -49,9 +49,7 @@ class markdown:
         for rank,value in dict_standings.items():
             text += """[{west_name}](/r/)|{west_record}|{west_gb_conf}|{conf_rank}|{east_gb_conf}|{east_record}|[{east_name}](/r/)\n""".format(**value)
         return text
-
-
-
+    
     def playoffs(self, dict_playoffs):
         text = """####[](//)\n\n||||||||\n:-:|:-:|:-:|:-:|:-:|:-:|:-:\n**1***8*||**4***5*||**3***6*||**2***7*\n"""
 
