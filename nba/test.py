@@ -1,10 +1,11 @@
 from data import data
 from markdown import markdown
 from pprint import pprint
-from prawmod import bot
 import datetime
 import requests
-import json
+import praw
+from pprint import pprint
+import config
 # def getThread(hTeamName, vTeamName):
 #     for thread in bot.subreddit('nba' ).new(limit=200):
 #         threadType = str(thread.link_flair_css_class)
@@ -24,6 +25,16 @@ from data import data
 mdown = markdown()
 data = data()
 teams = []
-for team, team_data in data.team_abbrev_dict.items():
-    teams.append((team, team_data['med_name']))
-print(teams)
+bot = praw.Reddit(client_id=config.client_id, client_secret=config.client_secret, user_agent=config.user_agent, username=config.username, password=config.password)
+def getThread(hTeamName, vTeamName):
+    for thread in bot.subreddit('nba').new(limit=200):
+        threadType = str(thread.link_flair_css_class)
+        threadDate =  datetime.datetime.now().replace(hour = 0, minute = 0, second = 0, microsecond = 0)
+        pprint(vars(thread))
+        if thread.period['current'] == 4 and thread.clock == '':
+            if 'postgamethread' == threadType and datetime.datetime.fromtimestamp(thread.created).replace(hour = 0, minute = 0, second = 0, microsecond = 0) == threadDate+datetime.timedelta(days=1) and all(x in thread.title for x in [hTeamName, vTeamName]):
+                return thread.url
+        else:
+            if 'gamethread' == threadType and datetime.datetime.fromtimestamp(thread.created).replace(hour = 0, minute = 0, second = 0, microsecond = 0) == threadDate+datetime.timedelta(days=1) and all(x in thread.title for x in [hTeamName, vTeamName]):
+                return thread.url
+print((mdown.top_bar(data.top_bar())))

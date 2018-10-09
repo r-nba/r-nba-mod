@@ -27,7 +27,7 @@ class markdown:
     # Input dictionary containing live game scores
     # Output: Markdown for game score bar
     def top_bar(self, top_bar_elements):
-        text = """> \n* [Reddit](//www.reddit.com)\n* [Player Flair Tool](//www.nbaflairbot.herokuapp.com/)\n* [](#A) [](#A) [Free Agency Tracker](https://www.reddit.com/r/nba/6j2ts)\n"""
+        text = """> \n* [Reddit](//www.reddit.com)\n* [Player Flair Tool](//www.nbaflairbot.herokuapp.com/)\n* [](#A) [Free Agency Tracker](https://www.reddit.com/r/nba/6j2ts)\n"""
         for game in top_bar_elements:
             home_score = ""
             away_score = ""
@@ -39,9 +39,9 @@ class markdown:
                 elif int(game['home_score']) < int(game['away_score']):
                     game['away']  = "**" + game['away'] + "**"
 
-            text += """* [{0}](#GT) [{1}](#GH) [{2}](#GV) {3} {4}\n""" \
-                .format(game['time'], game['home'], game['away'], home_score, away_score)
-        text += '* \n'
+            text += """* [{0}]({1}) [{2}](#GH) [{3}](#GV) {4} {5}\n""" \
+                .format(game['time'],game['gamethread'], game['home'], game['away'], home_score, away_score)
+        text += '*  \n'
         return text
 
     def standings(self, dict_standings):
