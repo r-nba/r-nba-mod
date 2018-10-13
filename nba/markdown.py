@@ -71,7 +71,7 @@ class markdown:
         text = text[:-2] + "\n\n"
 
         #WCF
-        text += """||||||||||\n:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:"""
+        text += """||||||||||\n:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:\n"""
         text += """|||[](/r/{top_sub})||**{top_name}** {summary} *{bottom_name}*||[](/r/{bottom_sub})||\n|\n""".format(**dict_playoffs['13'])
 
         #Finals
