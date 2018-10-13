@@ -6,7 +6,7 @@ import collections
 import praw
 import config
 from pprint import pprint
-
+from dateutil import parser
 
 def main():
     d = data()
@@ -28,9 +28,6 @@ class data:
             calendar_day = calendar.day_name[date.weekday()]
             key = calendar_day + ", " + month + " " + date.strftime('%d')
             parameter = date.strftime('%Y%m%d')
-            parameter = str(
-                20180928 + delta)  # This line is for testing purposes. Date is set to first day of preseason
-            # print(key)
             # print(parameter)
             games = []
             with urlopen('http://data.nba.com/prod/v2/' + parameter + '/scoreboard.json') as url:
@@ -41,10 +38,14 @@ class data:
                         continue
                     gameDetails = {}
                     gameDetails["time"] = game["startTimeEastern"].replace(" ET", "")
+
                     gameDetails["home"] = game["hTeam"]["triCode"]
                     gameDetails["home_subreddit"] = self.team_id_dict[game["hTeam"]["teamId"]]["sub"]
                     gameDetails["away"] = game["vTeam"]["triCode"]
                     gameDetails["away_subreddit"] = self.team_id_dict[game["vTeam"]["teamId"]]["sub"]
+                    gameDetails['station'] = game['watch']['broadcast']['broadcasters']['national']
+                    if gameDetails['station']:
+                        gameDetails['station'] = gameDetails['station'][0]['shortName']
                     # print(gameDetails)
                     games.append(gameDetails)
             # print(games)
@@ -101,6 +102,10 @@ class data:
                     gameDetails['gamethread'] = gameThreadID
                 gameDetails["home"] = game["hTeam"]["triCode"]
                 gameDetails["away"] = game["vTeam"]["triCode"]
+                gameDetails['vTeamCode'] = game['vTeam']['triCode']
+                gameDetails['hTeamCode'] = game['hTeam']['triCode']
+                gameDetails["threadtime"] = parser.parse(game["startTimeEastern"])
+                gameDetails['thread_created'] = False
                 if not game["statusNum"] == 1:
                     gameDetails["home_score"] = game["hTeam"]["score"]
                     gameDetails["away_score"] = game["vTeam"]["score"]

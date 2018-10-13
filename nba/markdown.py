@@ -14,7 +14,7 @@ class markdown:
     # {"Tuesday": [{gameinfo},{gameinfo}], "Wednesday": [{gameinfo},{gameinfo}], "Thursday": [{gameinfo},{gameinfo}]]
     # Output: Markdown for schedule
     def schedule(self, dict_schedule):
-        line = ''
+        line = '###[](//)\n######[](//)\n\n'
         for k, day in dict_schedule.items():
             line += """[{0}| ET](/date)\n""".format(k)
             line += """|||\n:--|:-:\n"""
@@ -45,13 +45,13 @@ class markdown:
         return text
 
     def standings(self, dict_standings):
-        text = """WEST|W - L|GB||GB|W - L|EAST\n:-:|:-:|:-:|:-:|:-:|:-:|:-:\n"""
+        text = """###[](//)\n##[](//)\n\n|WEST|W - L|GB||GB|W - L|EAST\n:-:|:-:|:-:|:-:|:-:|:-:|:-:\n"""
         for rank,value in dict_standings.items():
-            text += """[{west_name}](/r/)|{west_record}|{west_gb_conf}|{conf_rank}|{east_gb_conf}|{east_record}|[{east_name}](/r/)\n""".format(**value)
+            text += """[{west_name}](/r/{west_sub})|{west_record}|{west_gb_conf}|{conf_rank}|{east_gb_conf}|{east_record}|[{east_name}](/r/{east_sub})\n""".format(**value)
         return text
     
     def playoffs(self, dict_playoffs):
-        text = """####[](//)\n\n||||||||\n:-:|:-:|:-:|:-:|:-:|:-:|:-:\n**1***8*||**4***5*||**3***6*||**2***7*\n"""
+        text = """###[](//)\n####[](//)\n\n||||||||\n:-:|:-:|:-:|:-:|:-:|:-:|:-:\n**1***8*||**4***5*||**3***6*||**2***7*\n"""
 
         # West Round 1
         for i in range(1,5):

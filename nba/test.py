@@ -37,4 +37,5 @@ def getThread(hTeamName, vTeamName):
         else:
             if 'gamethread' == threadType and datetime.datetime.fromtimestamp(thread.created).replace(hour = 0, minute = 0, second = 0, microsecond = 0) == threadDate+datetime.timedelta(days=1) and all(x in thread.title for x in [hTeamName, vTeamName]):
                 return thread.url
-print((mdown.top_bar(data.top_bar())))
+print((mdown.schedule(data.schedule())))
+# print(data.standings())
