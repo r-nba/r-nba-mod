@@ -13,14 +13,13 @@ def main():
     d.standings()
     d.playoffs()
 
-
 class data:
 
     def team_subreddits(self):
         return [{"team_abbrev": abbrev, "subreddit": self.team_abbrev_dict[abbrev]["sub"]} for abbrev in
                 self.team_abbrev_dict]
 
-    def schedule(self):
+    def get_schedule(self):
         days = {}
         for delta in range(3):
             date = (datetime.datetime.today() + datetime.timedelta(days=delta))
@@ -28,7 +27,6 @@ class data:
             calendar_day = calendar.day_name[date.weekday()]
             key = calendar_day + ", " + month + " " + date.strftime('%d')
             parameter = date.strftime('%Y%m%d')
-            # print(parameter)
             games = []
             with urlopen('http://data.nba.com/prod/v2/' + parameter + '/scoreboard.json') as url:
                 j = json.loads(url.read().decode())
@@ -46,81 +44,103 @@ class data:
                     gameDetails['station'] = game['watch']['broadcast']['broadcasters']['national']
                     if gameDetails['station']:
                         gameDetails['station'] = gameDetails['station'][0]['shortName']
-                    # print(gameDetails)
+                    
                     games.append(gameDetails)
-            # print(games)
+                    
             days[key] = games
-
-        # print(days)
-
+            
         return days
 
-    def getThread(self, hTeamName, vTeamName):
-        for thread in self.bot.subreddit('nba').new(limit=200):
-            threadType = str(thread.link_flair_css_class)
-            threadDate = datetime.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
-            if 'gamethread' == threadType and datetime.datetime.fromtimestamp(thread.created).replace(hour = 0, minute = 0, second = 0, microsecond = 0) == threadDate+datetime.timedelta(days=1) and all(x in thread.title for x in [hTeamName, vTeamName]):
-                return '//redd.it/'+thread.id+" \"GT\""
-        return '// \"GT\"'
-    def getPostGame(self, hTeamName, vTeamName):
-        for thread in self.bot.subreddit('nba').new(limit=200):
-            threadType = str(thread.link_flair_css_class)
-            threadDate = datetime.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
-            if 'postgamethread' == threadType and datetime.datetime.fromtimestamp(thread.created).replace(hour = 0, minute = 0, second = 0, microsecond = 0) == threadDate+datetime.timedelta(days=1) and all(x in thread.title for x in [hTeamName, vTeamName]):
-                return '//redd.it/'+thread.id+" \"GF\""
-        return '// \"GF\"'
-
-    def top_bar(self):
+    def get_threads(self, hTeam, vTeam):
+        
+        away_team_med = team_abbrev_dict[vTeam]['med_name']
+        home_team_med = team_abbrev_dict[hTeam]['med_name']
+        
+        for t in self.bot.subreddit('nba').new(limit=200):
+            if (away_team_med in t.title) and (home_team_med in t.title):
+                if t.link_flair_css == 'game':
+                    return '//redd.it/' + t.id + ' "GT"'
+                elif t.link_flair_css == 'post':
+                    return '//redd.it/' + t.id + ' "GF"'
+            else:
+                return None
+        
+    def get_games(self):
         games = []
         parameter = datetime.datetime.today().strftime('%Y%m%d')
-        # parameter = str(20180314) # This line is for testing purposes. Date is set to March 14th, 2018.
         with urlopen('http://data.nba.com/prod/v2/' + parameter + '/scoreboard.json') as url:
             j = json.loads(url.read().decode())
             for game in j["games"]:
-                pprint(game)
+
                 if game["vTeam"]["teamId"] not in self.team_id_dict or game["hTeam"][
                     "teamId"] not in self.team_id_dict:  # Games against non-nba teams are disregarded
                     continue
+                
                 for team in self.teams:
                     if team[0] == game['hTeam']['triCode']:
-                        hTeamName = team[1]
+                        hTeam = team[1]
                     if team[0] == game['vTeam']['triCode']:
-                        vTeamName = team[1]
+                        vTeams = team[1]
+                        
                 gameDetails = {}
                 if game["statusNum"] == 1:  # Game hasn't started
                     gameDetails["time"] = game["startTimeEastern"].replace(" ET", "")
-                    gameThreadID = self.getThread(hTeamName, vTeamName)
-                    gameDetails['gamethread'] = gameThreadID
                 elif game["statusNum"] == 2:  # Game in progress
                     gameDetails["time"] = str(game["clock"]) + " " + str(game["period"]["current"]) + "Q"
-                    gameDetails["time"] = str(game["clock"]) + " " + str(game["period"]["current"]) + "Q"
-                    gameThreadID = self.getThread(hTeamName, vTeamName)
-                    gameDetails['gamethread'] = gameThreadID
                 elif game["statusNum"] == 3:  # Game completed
                     gameDetails["time"] = "FINAL"
-                    gameThreadID = self.getPostGame(hTeamName, vTeamName)
-                    gameDetails['gamethread'] = gameThreadID
+
+                # Find Home and Away teams
                 gameDetails["home"] = game["hTeam"]["triCode"]
                 gameDetails["away"] = game["vTeam"]["triCode"]
-                gameDetails['vTeamCode'] = game['vTeam']['triCode']
-                gameDetails['hTeamCode'] = game['hTeam']['triCode']
-                gameDetails["threadtime"] = parser.parse(game["startTimeEastern"])
-                gameDetails['thread_created'] = False
+
+                # Find Home and Away team subs
+                gameDetails["home_subreddit"] = self.team_abbrev_dict[gameDetails["home"]]["sub"]
+                gameDetails["away_subreddit"] = self.team_abbrev_dict[gameDetails["away"]]["sub"]
+
+                # Find Home and Away team records
+                gameDetails["home_win"] = game["hTeam"]["win"]
+                gameDetails["home_loss"] = game["hTeam"]["loss"]
+                gameDetails["away_win"] = game["vTeam"]["win"]
+                gameDetails["away_loss"] = game["vTeam"]["loss"]
+
+                # Find arena
+                gameDetails['arena'] = game["arena"]["name"] + ', ' + game["arena"]["city"] + ', ' + game["arena"]["stateAbbr"]
+
+                # Find broadcast info
+                broadcasts = dict(
+                    local=[],
+                    national=[]
+                )
+                
+                for broadcast in game["watch"]["broadcast"]["broadcasters"]["national"]:
+                    if len(broadcast) > 0:
+                        broadcasts["national"].append(broadcast["shortName"])
+                for broadcast in (game["watch"]["broadcast"]["broadcasters"]["vTeam"], game["watch"]["broadcast"]["broadcasters"]["hTeam"]):
+                    if len(broadcast) > 0:
+                        broadcasts["local"].append(broadcast[0]["shortName"])
+
+                # Find scores if they exist
                 if not game["statusNum"] == 1:
                     gameDetails["home_score"] = game["hTeam"]["score"]
                     gameDetails["away_score"] = game["vTeam"]["score"]
                 else:
                     gameDetails["home_score"] = ""
                     gameDetails["away_score"] = ""
-                # print(gameDetails)
+                
+                gameDetails["threadtime"] = parser.parse(game["startTimeEastern"])
+                gameDetails['thread_created'] = False
+
+                # Find threads if they exist
+                thread_id = self.get_threads(hTeam, vTeam)
+                if thread_id is not None:
+                    gameDetails['thread_id'] = thread_id
+                
                 games.append(gameDetails)
-        # print(games)
+                
         return games
 
-    def game_threads(self):
-        return ""
-
-    def standings(self):
+    def get_standings(self):
         standings = {}
         with urlopen('http://data.nba.com/prod/v1/current/standings_conference.json') as url:
             j = json.loads(url.read().decode())
@@ -146,10 +166,10 @@ class data:
                     'west_div_rank': west['divRank']
                 }
                 standings[int(i + 1)] = tmp_row
-        # print(standings)
+
         return standings
 
-    def playoffs(self):
+    def get_playoffs(self):
         bracket = collections.OrderedDict()
         with urlopen('https://data.nba.com/data/10s/prod/v1/2017/playoffsBracket.json') as url:
             j = json.loads(url.read().decode())
@@ -190,7 +210,7 @@ class data:
                         bracket['16'] = {
                             'champ': "NA"
                         }
-        print(bracket)
+
         return bracket
 
     def __init__(self):
