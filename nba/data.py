@@ -80,7 +80,7 @@ class data:
                     if team[0] == game['hTeam']['triCode']:
                         hTeam = team[1]
                     if team[0] == game['vTeam']['triCode']:
-                        vTeams = team[1]
+                        vTeam = team[1]
                         
                 gameDetails = {}
                 if game["statusNum"] == 1:  # Game hasn't started
