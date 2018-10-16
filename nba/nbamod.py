@@ -20,8 +20,10 @@ class NBA_MOD:
         logging.getLogger('apscheduler').setLevel(logging.DEBUG)
         self.D = data.data()
         self.M = markdown.markdown()
+        self.update_games_daily()
         self.sched = BlockingScheduler()
         self.sched.add_job(self.create_game_threads, "interval", [reddit], minutes=1)
+        self.sched.add_job(self.update_games_daily, "cron", hour=4)
         self.sched.start()
         submissions = []
 
@@ -54,9 +56,8 @@ class NBA_MOD:
         reddit.subreddit('nbadev').wiki['config/sidebar'].edit(content=updated_sidebar)
 
     def create_game_threads(self, reddit):
-        games = self.D.get_games()
         team_dict = self.D.team_abbrev_dict
-        for game in games:
+        for game in self.games:
             if (datetime.datetime.now() + datetime.timedelta(hours=2)) > game['threadtime']:
                 if game['thread_created'] == False:
                     date = datetime.datetime.today()
@@ -77,4 +78,6 @@ class NBA_MOD:
         submission_text = self.M.generate_thread_markdown(self.D.get_games(), hteam, vteam)
         submission.edit(submission_text)
 
+    def update_games_daily(self):
+        self.games = self.D.get_games()
 NBA = NBA_MOD()
