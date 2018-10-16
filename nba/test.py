@@ -26,6 +26,9 @@ mdown = markdown()
 data = data()
 teams = []
 bot = praw.Reddit(client_id=config.client_id, client_secret=config.client_secret, user_agent=config.user_agent, username=config.username, password=config.password)
+# stylesheet = bot.subreddit('nba').wiki['config/stylesheet'].content_md
+# bot.subreddit('nbadev').submit('testing', selftext='', flair_id='fea08cec-69cf-11e8-9dba-0e75baaabcce')
+mdown.generate_thread_markdown(data.get_games(), 'BOS', 'PHI')
 def getThread(hTeamName, vTeamName):
     for thread in bot.subreddit('nba').new(limit=200):
         threadType = str(thread.link_flair_css_class)
@@ -37,5 +40,5 @@ def getThread(hTeamName, vTeamName):
         else:
             if 'gamethread' == threadType and datetime.datetime.fromtimestamp(thread.created).replace(hour = 0, minute = 0, second = 0, microsecond = 0) == threadDate+datetime.timedelta(days=1) and all(x in thread.title for x in [hTeamName, vTeamName]):
                 return thread.url
-print((mdown.schedule(data.schedule())))
+#print((mdown.schedule(data.schedule())))
 # print(data.standings())

@@ -21,7 +21,7 @@ class data:
 
     def get_schedule(self):
         days = {}
-        for delta in range(3):
+        for delta in range(5):
             date = (datetime.datetime.today() + datetime.timedelta(days=delta))
             month = calendar.month_name[date.month]
             calendar_day = calendar.day_name[date.weekday()]
@@ -44,27 +44,27 @@ class data:
                     gameDetails['station'] = game['watch']['broadcast']['broadcasters']['national']
                     if gameDetails['station']:
                         gameDetails['station'] = gameDetails['station'][0]['shortName']
-                    
+
                     games.append(gameDetails)
-                    
+
             days[key] = games
-            
+
         return days
 
     def get_threads(self, hTeam, vTeam):
-        
-        away_team_med = team_abbrev_dict[vTeam]['med_name']
-        home_team_med = team_abbrev_dict[hTeam]['med_name']
-        
+
+        away_team_med = self.team_abbrev_dict[vTeam]['med_name']
+        home_team_med = self.team_abbrev_dict[hTeam]['med_name']
+
         for t in self.bot.subreddit('nba').new(limit=200):
             if (away_team_med in t.title) and (home_team_med in t.title):
-                if t.link_flair_css == 'game':
+                if t.link_flair_css_class == 'gamethread':
                     return '//redd.it/' + t.id + ' "GT"'
-                elif t.link_flair_css == 'post':
+                elif t.link_flair_css_class == 'postgamethread':
                     return '//redd.it/' + t.id + ' "GF"'
             else:
                 return None
-        
+
     def get_games(self):
         games = []
         parameter = datetime.datetime.today().strftime('%Y%m%d')
@@ -75,13 +75,8 @@ class data:
                 if game["vTeam"]["teamId"] not in self.team_id_dict or game["hTeam"][
                     "teamId"] not in self.team_id_dict:  # Games against non-nba teams are disregarded
                     continue
-                
-                for team in self.teams:
-                    if team[0] == game['hTeam']['triCode']:
-                        hTeam = team[1]
-                    if team[0] == game['vTeam']['triCode']:
-                        vTeam = team[1]
-                        
+
+
                 gameDetails = {}
                 if game["statusNum"] == 1:  # Game hasn't started
                     gameDetails["time"] = game["startTimeEastern"].replace(" ET", "")
@@ -93,6 +88,10 @@ class data:
                 # Find Home and Away teams
                 gameDetails["home"] = game["hTeam"]["triCode"]
                 gameDetails["away"] = game["vTeam"]["triCode"]
+
+                #Add full names
+                gameDetails["away_long"] = self.team_abbrev_dict[gameDetails['away']]['long_name']
+                gameDetails["home_long"] = self.team_abbrev_dict[gameDetails['home']]['long_name']
 
                 # Find Home and Away team subs
                 gameDetails["home_subreddit"] = self.team_abbrev_dict[gameDetails["home"]]["sub"]
@@ -112,7 +111,7 @@ class data:
                     local=[],
                     national=[]
                 )
-                
+
                 for broadcast in game["watch"]["broadcast"]["broadcasters"]["national"]:
                     if len(broadcast) > 0:
                         broadcasts["national"].append(broadcast["shortName"])
@@ -127,17 +126,17 @@ class data:
                 else:
                     gameDetails["home_score"] = ""
                     gameDetails["away_score"] = ""
-                
+
                 gameDetails["threadtime"] = parser.parse(game["startTimeEastern"])
                 gameDetails['thread_created'] = False
 
                 # Find threads if they exist
-                thread_id = self.get_threads(hTeam, vTeam)
+                thread_id = self.get_threads(gameDetails['home'], gameDetails['away'])
                 if thread_id is not None:
                     gameDetails['thread_id'] = thread_id
-                
+
                 games.append(gameDetails)
-                
+
         return games
 
     def get_standings(self):
@@ -240,9 +239,6 @@ class data:
                 self.team_id_dict[teamInfo[7]] = tmp_team_id_dict
                 self.team_name_dict[teamInfo[1]] = tmp_team_id_dict
                 self.team_abbrev_dict[teamInfo[2].upper()] = tmp_team_id_dict
-        self.teams = []
-        for team, team_data in self.team_abbrev_dict.items():
-            self.teams.append((team, team_data['med_name']))
 
 
 if __name__ == "__main__":

@@ -9,7 +9,7 @@ class markdown:
             # Unpacks team['subreddit'] into {subreddit}
             team_subs += """* []({subreddit})\n""".format(**team)
         return team_subs
-    
+
     # Input dictionary containing live game scores
     # Output: Markdown for game score bar
     def create_game_bar(self, game_bar_elements):
@@ -29,13 +29,22 @@ class markdown:
                 .format(game['time'],game['gamethread'], game['home'], game['away'], home_score, away_score)
         text += '*  \n'
         return text
-    
+
     def create_standings(self, dict_standings):
         text = """###[](//)\n\n##[](//)\n\n|WEST|W - L|GB||GB|W - L|EAST\n:-:|:-:|:-:|:-:|:-:|:-:|:-:\n"""
         for rank,value in dict_standings.items():
             text += """[{west_name}](/r/{west_sub})|{west_record}|{west_gb_conf}|{conf_rank}|{east_gb_conf}|{east_record}|[{east_name}](/r/{east_sub})\n""".format(**value)
         return text
-    
+
+    def generate_thread_markdown(self, games, hteam, vteam):
+        text = ''
+        for game in games:
+            if game['home'] == hteam and game['away'] == vteam:
+                text += '[{away_long}](/r/{away_subreddit}) Score: {away_score}\n'.format(**game)
+                text += '[{home_long}](/r/{away_subreddit}) Score: {home_score}\n'.format(**game)
+        return text
+
+
     # Input dictionary containing upcoming schedule data
     # {"Tuesday": [{gameinfo},{gameinfo}], "Wednesday": [{gameinfo},{gameinfo}], "Thursday": [{gameinfo},{gameinfo}]]
     # Output: Markdown for schedule
