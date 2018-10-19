@@ -5,6 +5,7 @@ import calendar
 import collections
 import praw
 import config
+import requests
 from pprint import pprint
 from dateutil import parser
 
@@ -56,19 +57,30 @@ class data:
         away_team_med = self.team_abbrev_dict[vTeam]['med_name']
         home_team_med = self.team_abbrev_dict[hTeam]['med_name']
 
-        for t in self.bot.subreddit('nba').new(limit=200):
+        for t in self.bot.subreddit('nbadev').new(limit=200):
             if (away_team_med in t.title) and (home_team_med in t.title):
-                if t.link_flair_css_class == 'gamethread':
+                if t.link_flair_css_class == 'game':
                     return '//redd.it/' + t.id + ' "GT"'
-                elif t.link_flair_css_class == 'postgamethread':
+                elif t.link_flair_css_class == 'post':
                     return '//redd.it/' + t.id + ' "GF"'
-            else:
-                return None
+        return '// "GT"'
 
-    def get_games(self):
+
+    def get_thread_id(self, hTeam, vTeam):
+        away_team_med = self.team_abbrev_dict[vTeam]['med_name']
+        home_team_med = self.team_abbrev_dict[hTeam]['med_name']
+
+        for t in self.bot.subreddit('nbadev').new(limit=200):
+            if (away_team_med in t.title) and (home_team_med in t.title):
+                if t.link_flair_css_class == 'game':
+                    return t.id
+        return None
+
+    def get_games(self, date=None):
         games = []
-        parameter = datetime.datetime.today().strftime('%Y%m%d')
-        with urlopen('http://data.nba.com/prod/v2/' + parameter + '/scoreboard.json') as url:
+        if date is None:
+            date = datetime.datetime.today().strftime('%Y%m%d')
+        with urlopen('http://data.nba.com/prod/v2/' + date + '/scoreboard.json') as url:
             j = json.loads(url.read().decode())
             for game in j["games"]:
 
@@ -129,11 +141,10 @@ class data:
 
                 gameDetails["threadtime"] = parser.parse(game["startTimeEastern"])
                 gameDetails['thread_created'] = False
-
                 # Find threads if they exist
+                gameDetails['thread_id']= self.get_thread_id(gameDetails['home'], gameDetails['away'])
                 thread_id = self.get_threads(gameDetails['home'], gameDetails['away'])
-                if thread_id is not None:
-                    gameDetails['thread_id'] = thread_id
+                gameDetails['thread_link'] = thread_id
 
                 games.append(gameDetails)
 
@@ -154,14 +165,14 @@ class data:
                     'east_nick': self.team_id_dict[east_id]['med_name'],
                     'east_sub': self.team_id_dict[east_id]["sub"],
                     'east_record': east['win'] + '-' + east['loss'],
-                    'east_gb_conf': '%.1f' % int(east['gamesBehind']),
+                    'east_gb_conf': '%.1f' % float(east['gamesBehind']),
                     'east_div_rank': east['divRank'],
                     'conf_rank': str(i + 1),
                     'west_name': self.team_id_dict[west_id]['short_name'],
                     'west_nick': self.team_id_dict[west_id]['med_name'],
                     'west_sub': self.team_id_dict[west_id]["sub"],
                     'west_record': west['win'] + '-' + west['loss'],
-                    'west_gb_conf': '%.1f' % int(west['gamesBehind']),
+                    'west_gb_conf': '%.1f' % float(west['gamesBehind']),
                     'west_div_rank': west['divRank']
                 }
                 standings[int(i + 1)] = tmp_row
@@ -211,6 +222,13 @@ class data:
                         }
 
         return bracket
+
+    def get_top_team_posts(self):
+        url = "http://www.reddit.com/r/nyknicks+sixers+bostonceltics+gonets+torontoraptors+chicagobulls+mkebucks+clevelandcavs+pacers+detroitpistons+heat+atlantahawks+orlandomagic+charlottehornets+washingtonwizards+timberwolves+thunder+ripcity+utahjazz+denvernuggets+laclippers+kings+suns+lakers+nbaspurs+mavericks+memphisgrizzlies+rockets+hornets/.json?limit=5"
+        resp = requests.get(url=url)
+        data = resp.json()
+        return data
+
 
     def __init__(self):
         self.json_teams = None

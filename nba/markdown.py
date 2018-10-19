@@ -26,7 +26,7 @@ class markdown:
                     game['away']  = "**" + game['away'] + "**"
 
             text += """* [{0}]({1}) [{2}](#GH) [{3}](#GV) {4} {5}\n""" \
-                .format(game['time'],game['gamethread'], game['home'], game['away'], home_score, away_score)
+                .format(game['time'],game['thread_link'], game['away'], game['home'], away_score, home_score)
         text += '*  \n'
         return text
 
@@ -41,7 +41,7 @@ class markdown:
         for game in games:
             if game['home'] == hteam and game['away'] == vteam:
                 text += '[{away_long}](/r/{away_subreddit}) Score: {away_score}\n'.format(**game)
-                text += '[{home_long}](/r/{away_subreddit}) Score: {home_score}\n'.format(**game)
+                text += '[{home_long}](/r/{home_subreddit}) Score: {home_score}\n'.format(**game)
         return text
 
 
