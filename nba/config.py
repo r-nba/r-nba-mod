@@ -1,0 +1,5 @@
+client_id = 'SDAzYSDoAGStJw'
+client_secret = ''
+user_agent = 'nba_bot'
+username = ''
+password = ''
